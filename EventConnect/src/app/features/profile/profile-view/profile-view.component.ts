@@ -35,20 +35,23 @@ export class ProfileViewComponent {
   };
 
   ngOnInit(): void {
-    const currentUser = this.authService.getCurrentUser();
-
-    if (currentUser) {
-      this.user = {
-        _id: currentUser._id,
-        name: currentUser.name || 'Usuario',
-        email: currentUser.email || '',
-        username: currentUser.username || '',
-        avatarUrl: currentUser.avatarUrl || 'assets/images/default-avatar.png',
-        bio: currentUser.bio || '',
-        location: currentUser.location || '',
-        interests: currentUser.interests || ['culture', 'sports', 'family']
-      };
-    }
+    this.authService.getProfile().subscribe({
+      next: (profile: UserProfile) => {
+        this.user = {
+          _id: profile._id ?? '',
+          name: profile.name ?? 'Usuario',
+          email: profile.email ?? '',
+          username: profile.username ?? '',
+          avatarUrl: profile.avatarUrl ?? 'assets/images/default-avatar.png',
+          bio: profile.bio ?? '',
+          location: profile.location ?? '',
+          interests: profile.interests ?? ['culture', 'sports', 'family']
+        };
+      },
+      error: () => {
+        // Si hay error, deja los datos de ejemplo
+      }
+    });
   }
 
   goToEditProfile(): void {
@@ -68,6 +71,15 @@ export class ProfileViewComponent {
   }
 
   logout(): void {
+    this.user = {
+      name: '',
+      email: '',
+      username: '',
+      avatarUrl: '',
+      bio: '',
+      location: '',
+      interests: []
+    };
     this.authService.logout();
     this.router.navigate(['/login']);
   }
