@@ -1,65 +1,73 @@
-.hero{
-  height:440px;
+.hero {
+  height: 480px;
   background:
-  linear-gradient(rgba(0,0,0,0.25),rgba(0,0,0,0.25)),
-  url("/assets/images/zaragoza.png") center/cover no-repeat;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  color:white;
+    linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+    url("/assets/images/zaragoza.png") center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
 }
 
-.hero h1{
-  font-size:46px;
-  font-weight:700;
-  margin-bottom:35px;
-  text-shadow:0 3px 10px rgba(0,0,0,0.4);
+.hero h1 {
+  font-size: 50px;
+  font-weight: 800;
+  margin-bottom: 35px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  letter-spacing: -0.5px;
+  line-height: 1.15;
 }
 
-.search{
-  display:flex;
-  justify-content:center;
+.search {
+  display: flex;
+  justify-content: center;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
 }
 
-.search input{
-  width:460px;
-  padding:18px;
-  border:none;
-  font-size:18px;
-  border-radius:10px 0 0 10px;
-  background:white;
+.search input {
+  width: 480px;
+  padding: 18px 24px;
+  border: none;
+  font-size: 16px;
+  border-radius: 14px 0 0 14px;
+  background: white;
+  outline: none;
+  color: #1a1a2e;
+
+  &::placeholder { color: #aaa; }
 }
 
-.search button{
-  background:#1E5BB8;
-  color:white;
-  border:none;
-  padding:18px 35px;
-  font-size:18px;
-  border-radius:0 10px 10px 0;
-  cursor:pointer;
-  font-weight:600;
+.search button {
+  background: #1E5BB8;
+  color: white;
+  border: none;
+  padding: 18px 38px;
+  font-size: 16px;
+  border-radius: 0 14px 14px 0;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: background 0.2s;
+
+  &:hover { background: #174A96; }
 }
 
-.search button:hover{
-  background:#174A96;
+.featured {
+  padding: 60px 90px 80px;
+  background: #f5f6fa;
 }
 
-.featured{
-  padding:50px 90px;
-  background:#f5f6fa;
+.featured h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 30px;
+  color: #1a1a2e;
+  letter-spacing: -0.3px;
 }
 
-.featured h2{
-  font-size:26px;
-  margin-bottom:25px;
+.events {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
 }
-
-.events{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:30px;
-}
-
