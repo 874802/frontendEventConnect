@@ -21,6 +21,7 @@ export class FriendsComponent implements OnInit {
 
   friends: any[] = [];
   pendingRequests: any[] = [];
+  sentRequests: any[] = [];
   suggestedUsers: any[] = [];
   allUsers: any[] = [];
 
@@ -41,12 +42,14 @@ export class FriendsComponent implements OnInit {
   acceptingRequestIds = new Set<string>();
   rejectingRequestIds = new Set<string>();
   removingFriendIds = new Set<string>();
+  cancellingRequestIds = new Set<string>();
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser() as any;
     this.currentUserId = user?._id || '';
     this.loadFriends();
     this.loadPendingRequests();
+    this.loadSentRequests();
     this.loadSuggestedUsers();
   }
 
@@ -54,7 +57,8 @@ export class FriendsComponent implements OnInit {
     return users.filter((user: any) =>
       user._id !== this.currentUserId &&
       !this.friends.find(f => f._id === user._id) &&
-      !this.pendingRequests.find(p => p.fromUser._id === user._id)
+      !this.pendingRequests.find(p => p.fromUser._id === user._id) &&
+      !this.sentRequests.find(s => s.toUser._id === user._id)
     );
   }
 
@@ -82,6 +86,18 @@ export class FriendsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar solicitudes:', err);
+      }
+    });
+  }
+
+  loadSentRequests(): void {
+    this.friendsService.getSentRequests().subscribe({
+      next: (res) => {
+        this.sentRequests = res.sentRequests;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar solicitudes enviadas:', err);
       }
     });
   }
@@ -115,8 +131,12 @@ export class FriendsComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.allUsers = this.allUsers.filter(u => u._id !== friendId);
           this.suggestedUsers = this.suggestedUsers.filter(u => u._id !== friendId);
+          this.loadSentRequests();
+          // Actualizar allUsers: marcar como pendiente en vez de quitar
+          this.allUsers = this.allUsers.map(u =>
+            u._id === friendId ? { ...u, requestSent: true } : u
+          );
           this.cdr.detectChanges();
         },
         error: (err) => {
@@ -246,22 +266,6 @@ export class FriendsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  loadAllUsers(): void {
-    this.isSearchingUsers = true;
-
-    this.friendsService.getAllUsers().subscribe({
-      next: (res: any) => {
-        this.allUsers = this.filterAvailableUsers(res.users || []);
-        this.isSearchingUsers = false;
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error('Error al cargar usuarios:', err);
-        this.isSearchingUsers = false;
-      }
-    });
-  }
-
   onSearchAddFriend(): void {
     clearTimeout(this.searchTimeout);
 
@@ -281,7 +285,10 @@ export class FriendsComponent implements OnInit {
 
       this.friendsService.searchUsers(term).subscribe({
         next: (res: any) => {
-          this.allUsers = this.filterAvailableUsers(res.users || []);
+          this.allUsers = this.filterAvailableUsers(res.users || []).map(u => ({
+            ...u,
+            requestSent: this.sentRequests.some(s => s.toUser._id === u._id)
+          }));
           this.isSearchingUsers = false;
           this.cdr.detectChanges();
         },
